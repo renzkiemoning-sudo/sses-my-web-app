@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sindangan Sentinel Emergency System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-panel">
+      <div class="brand-panel">
+        <div class="brand-logo"><img id="brandLogoImg" alt="Sindangan Sentinel logo" /></div>
+        <div class="brand-copy">
+          <h1>Sindangan Sentinel</h1>
+          <p>Emergency Response &amp; Alerts</p>
+        </div>
+      </div>
+      <div class="auth-toggle">
+        <button id="showLoginBtn" class="mode-btn active">Login</button>
+        <button id="showRegisterBtn" class="mode-btn">Register</button>
+      </div>
+      <form id="loginForm" class="form-grid auth-form">
+        <label for="loginRole">Sign in as
+          <select id="loginRole" required>
+            <option value="admin">ADMIN</option>
+            <option value="user" selected>USER</option>
+            <option value="pnp">PNP</option>
+            <option value="hospital">HOSPITAL</option>
+            <option value="bfp">BFP</option>
+            <option value="mdrrmc">MDRRMC</option>
+            <option value="zaneco">ZANECO</option>
+          </select>
+        </label>
+        <label>Email
+          <input id="loginEmail" type="email" placeholder="you@example.com" required />
+        </label>
+        <label>Password
+          <div class="password-field">
+            <input id="loginPassword" type="password" placeholder="Enter your password" required />
+            <button type="button" class="password-toggle" data-target="loginPassword" aria-label="Show password">
+              <span class="password-toggle-icon">👁</span>
+            </button>
+          </div>
+        </label>
+        <div class="login-error" id="loginMessage"></div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn">Login</button>
+        </div>
+      </form>
+      <form id="registerForm" class="form-grid auth-form hidden">
+        <label>Full Name
+          <input id="registerName" type="text" placeholder="Your full name" required />
+        </label>
+        <label>Email
+          <input id="registerEmail" type="email" placeholder="you@example.com" required />
+        </label>
+        <label>Phone
+          <input id="registerPhone" type="tel" placeholder="Mobile number" required />
+        </label>
+        <label>Password
+          <div class="password-field">
+            <input id="registerPassword" type="password" placeholder="Create a password" required />
+            <button type="button" class="password-toggle" data-target="registerPassword" aria-label="Show password">
+              <span class="password-toggle-icon">👁</span>
+            </button>
+          </div>
+        </label>
+        <label>Confirm Password
+          <div class="password-field">
+            <input id="registerConfirmPassword" type="password" placeholder="Confirm password" required />
+            <button type="button" class="password-toggle" data-target="registerConfirmPassword" aria-label="Show password">
+              <span class="password-toggle-icon">👁</span>
+            </button>
+          </div>
+        </label>
+        <div class="login-error" id="registerMessage"></div>
+        <div class="form-actions">
+          <button type="submit" class="primary-btn">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand-panel">
+        <div class="brand-logo"><img id="brandLogoImgSidebar" alt="Sindangan Sentinel logo" /></div>
+        <div>
+          <h1>Sindangan Sentinel</h1>
+          <p>Emergency Response & Alerts</p>
+        </div>
+      </div>
+      <div class="mode-switcher" style="display: none;">
+        <button id="userModeBtn" class="mode-btn active">User</button>
+        <button id="adminModeBtn" class="mode-btn">Admin</button>
+      </div>
+      <nav class="sidebar-menu" id="sidebarMenu"></nav>
+      <button class="logout-btn" id="logoutBtn">🚪 Logout</button>
+    </aside>
+
+    <main class="main-panel">
+      <header class="topbar">
+        <div class="topbar-title-wrap">
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="pageSubtitle">Overview of emergency status and alerts.</p>
+        </div>
+
+        <div class="topbar-actions">
+          <button type="button" class="notification-btn" aria-label="Notifications">🔔</button>
+          <button type="button" class="theme-toggle" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false">🌙</button>
+
+          <div class="profile-pill-wrapper">
+            <button type="button" class="profile-pill" aria-label="Open profile menu">
+              <div class="profile-avatar" id="profileAvatar">EO</div>
+              <div class="profile-meta">
+                <strong id="topbarProfileName">Elena Orillo</strong>
+                <span id="profileRole">System administrator</span>
+              </div>
+              <span class="caret">⌄</span>
+            </button>
+
+            <div class="profile-menu hidden" id="profileMenu">
+              <button type="button" class="profile-menu-item" data-action="profile">Profile</button>
+              <button type="button" class="profile-menu-item" data-action="logout">Logout</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="content-area" id="contentArea">
+        <!-- User Sections -->
+        <section class="section-panel admin-dashboard" id="dashboard" data-role="user admin">
+          <div id="citizenDashboardOverview" class="citizen-dashboard-overview hidden"></div>
+          <div id="adminDashboardOverview" class="admin-dashboard-overview hidden"></div>
+          <div id="departmentLanding" class="department-landing hidden"></div>
+          <div class="section-grid">
+            <article class="card stat-card">
+              <h3>Emergency Alerts</h3>
+              <p id="alertCount">0 active alerts</p>
+            </article>
+            <article class="card stat-card">
+              <h3>Recent Reports</h3>
+              <p id="reportCount">0 reports</p>
+            </article>
+            <article class="card stat-card">
+              <h3>Resolved Cases</h3>
+              <p id="resolvedCount">0 resolved</p>
+            </article>
+            <article class="card stat-card">
+              <h3>Active Emergencies</h3>
+              <p id="activeCount">0 active</p>
+            </article>
+          </div>
+          <div class="dashboard-widgets">
+            <article class="card wide-card">
+              <div class="card-header">
+                <h3>Recent Reports</h3>
+              </div>
+              <div id="recentReports" class="list-box"></div>
+            </article>
+            <article class="card wide-card">
+              <div class="card-header">
+                <h3>Safety Announcements</h3>
+              </div>
+              <ul id="safetyAnnouncements" class="info-list"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-panel" id="incomingCitizenReports" data-role="pnp hospital bfp mdrrmc zaneco">
+          <div id="departmentIncomingReportFeed"></div>
+        </section>
+
+        <section class="section-panel" id="reportEmergency" data-role="user">
+          <div class="report-page-heading">
+            <div class="report-heading-copy">
+              <div class="report-emblem" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v2m7 1.8-1.4 1.4M21 12h-2M5 12H3m3.4-5.2L5 5.4M8 12a4 4 0 1 1 8 0v4H8v-4Zm-2 4h12v4H6zM12 9v3m0 0 2 1" /></svg>
+              </div>
+              <div>
+                <p class="report-eyebrow">SINDANGAN SENTINEL / USER / REPORT EMERGENCY</p>
+                <h2>Report emergency</h2>
+                <p class="report-intro">Dedicated Citizen Portal tools for your reports and neighborhood safety. This workspace only contains functions related to reporting emergencies.</p>
+              </div>
+            </div>
+            <div class="report-heading-actions">
+              <button type="button" class="report-filter-btn" id="reportFiltersBtn" aria-expanded="false" aria-controls="reportFilterPanel">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16M9 4v4m6 2v4m-6 2v4" /></svg>
+                Filters
+              </button>
+              <button type="button" class="report-start-btn" data-report-start>
+                <span aria-hidden="true">+</span> Start emergency report
+              </button>
+              <div class="report-filter-panel hidden" id="reportFilterPanel">
+                <label for="reportCategoryFilter">Choose a report category</label>
+                <select id="reportCategoryFilter">
+                  <option value="">Select category</option>
+                  <option value="Medical Emergency">Medical</option>
+                  <option value="Fire">Fire</option>
+                  <option value="Crime/Accident">Police</option>
+                  <option value="Flood">Disaster</option>
+                  <option value="Other Incident">Power</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="report-stats" aria-label="Emergency report summary">
+            <article class="report-stat">
+              <span>Total records</span>
+              <strong id="reportPageTotal">0</strong>
+              <small>Updated just now</small>
+            </article>
+            <article class="report-stat">
+              <span>Active now</span>
+              <strong id="reportPageActive">0</strong>
+              <small>Live operations</small>
+            </article>
+            <article class="report-stat">
+              <span>Report status</span>
+              <strong><span id="reportPageAlerts">0</span> nearby alerts</strong>
+              <small>Ready for assignment</small>
+            </article>
+          </div>
+
+          <div class="report-assistance-panel">
+            <div class="report-assistance-intro">
+              <div class="report-assistance-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M12 3v2m7 1.8-1.4 1.4M21 12h-2M5 12H3m3.4-5.2L5 5.4M8 12a4 4 0 1 1 8 0v4H8v-4Zm-2 4h12v4H6zM12 9v3m0 0 2 1" /></svg>
+              </div>
+              <div class="report-assistance-copy">
+                <h3>Need emergency assistance?</h3>
+                <p>Send one verified report to Admin, PNP, Hospital, BFP, MDRRMC and ZANECO at the same time. The correct department will immediately take ownership.</p>
+              </div>
+              <button type="button" class="report-now-btn" data-report-start>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13" /></svg>
+                Report now
+              </button>
+            </div>
+
+            <div class="report-category-list" aria-label="Choose incident category">
+              <button type="button" class="report-category" data-incident-type="Medical Emergency">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.6c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11a4.6 4.6 0 0 1 8.8-1.8 4.6 4.6 0 0 1 8.8 1.8ZM5 12h4l2-3 2.2 6 1.5-3H19" /></svg>
+                <span>Medical</span>
+              </button>
+              <button type="button" class="report-category" data-incident-type="Fire">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-3.5-2.5-5.5-4-7-.3 2-1.5 3-2 3-1-3-2-5-5-8 0 4-1 6-2 8a8 8 0 0 0-1 4 7 7 0 0 0 7 7Zm0 0a3 3 0 0 0 3-3c0-1.5-1-2.5-2-3.5-.2 1-.8 1.5-1 1.5-.5-1-1-1.5-2-2.5 0 1.5-.5 2.5-1 3.5a3 3 0 0 0 3 4Z" /></svg>
+                <span>Fire</span>
+              </button>
+              <button type="button" class="report-category" data-incident-type="Crime/Accident">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" /></svg>
+                <span>Police</span>
+              </button>
+              <button type="button" class="report-category" data-incident-type="Flood">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><path d="m8.5 8.5 7 7m0-7-7 7" /></svg>
+                <span>Disaster</span>
+              </button>
+              <button type="button" class="report-category" data-incident-type="Other Incident">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 10-12h-7l1-8Z" /></svg>
+                <span>Power</span>
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <div class="report-dialog-overlay hidden" id="reportDialog">
+          <section class="report-dialog" role="dialog" aria-modal="true" aria-labelledby="reportDialogTitle">
+            <header class="report-dialog-header">
+              <div class="report-dialog-heading">
+                <div class="report-dialog-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3v2m7 1.8-1.4 1.4M21 12h-2M5 12H3m3.4-5.2L5 5.4M8 12a4 4 0 1 1 8 0v4H8v-4Zm-2 4h12v4H6zM12 9v3m0 0 2 1" /></svg>
+                </div>
+                <div>
+                  <h2 id="reportDialogTitle">Report an emergency</h2>
+                  <p>Your report will be sent to every response department immediately.</p>
+                </div>
+              </div>
+              <button type="button" class="report-dialog-close" data-report-close aria-label="Close report form">×</button>
+            </header>
+
+            <form id="reportForm" class="report-dialog-form">
+              <div class="report-dialog-body">
+                <div class="report-broadcast-notice">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9a15 15 0 0 1 0 6m4-9a10 10 0 0 1 0 12m4-15a5 5 0 0 1 0 18m4-8h8l-2-2v-2a2 2 0 0 0-4 0v2l-2 2Zm3 3a1 1 0 0 0 2 0" /></svg>
+                  <div>
+                    <strong>Unified broadcast enabled</strong>
+                    <span>Admin, PNP, Hospital, BFP, MDRRMC and ZANECO will receive this report.</span>
+                  </div>
+                </div>
+
+                <div class="report-dialog-grid">
+                  <label>Emergency type
+                    <select id="incidentType" required>
+                      <option value="" disabled selected>Select incident type</option>
+                      <option value="Medical Emergency">Medical emergency</option>
+                      <option value="Fire">Fire</option>
+                      <option value="Crime/Accident">Police / accident</option>
+                      <option value="Flood">Disaster / flood</option>
+                      <option value="Other Incident">Power / other incident</option>
+                    </select>
+                  </label>
+                  <label>Priority
+                    <select id="incidentPriority" required>
+                      <option value="Urgent">Urgent</option>
+                      <option value="High">High</option>
+                      <option value="Normal">Normal</option>
+                    </select>
+                  </label>
+                  <label class="report-dialog-full">Exact location
+                    <span class="report-location-field">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" /><circle cx="12" cy="10" r="2.5" /></svg>
+                      <input id="incidentLocation" type="text" placeholder="Barangay, street or landmark" required />
+                    </span>
+                  </label>
+                  <label class="report-dialog-full">What is happening?
+                    <textarea id="incidentDescription" rows="4" placeholder="Describe the emergency and people affected..." required></textarea>
+                  </label>
+                  <label>Reporter name
+                    <input id="reporterName" type="text" placeholder="Your full name" required />
+                  </label>
+                  <label>Contact number
+                    <input id="reporterContact" type="tel" placeholder="+63 9XX XXX XXXX" required />
+                  </label>
+                  <label class="report-attachment report-dialog-full" for="reportAttachments">
+                    <input id="reportAttachments" type="file" accept="image/jpeg,image/png,image/webp" multiple />
+                    <span class="report-attachment-plus" aria-hidden="true">+</span>
+                    <span class="report-attachment-copy"><strong>Add photos</strong><small>Optional · JPG, PNG or WebP, up to 20 MB total</small></span>
+                  </label>
+                  <p class="report-attachment-status report-dialog-full" id="reportAttachmentStatus" aria-live="polite"></p>
+                  <input id="incidentTitle" type="hidden" />
+                </div>
+              </div>
+
+              <footer class="report-dialog-footer">
+                <div class="report-identity-note">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" /><path d="m9 12 2 2 4-4" /></svg>
+                  <span>Your identity is protected</span>
+                </div>
+                <div class="report-dialog-actions">
+                  <button type="button" class="report-cancel-btn" data-report-close>Cancel</button>
+                  <button type="submit" class="report-broadcast-btn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13" /></svg>
+                    Broadcast report
+                  </button>
+                </div>
+              </footer>
+            </form>
+          </section>
+        </div>
+
+        <section class="section-panel" id="myReports" data-role="user">
+          <div class="card">
+            <h3>My Reports</h3>
+            <div id="myReportsList" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel" id="emergencyAlerts" data-role="user admin pnp hospital">
+          <div class="card" id="standardEmergencyAlerts">
+            <div id="alertsList" class="alert-list"></div>
+          </div>
+          <div id="pnpAlertCoordination"></div>
+          <div id="hospitalAlertCoordination"></div>
+        </section>
+
+        <section class="section-panel" id="emergencyContacts" data-role="user admin">
+          <div class="contact-directory-header">
+            <div class="contact-directory-copy">
+              <p class="contact-directory-eyebrow">SINDANGAN / RESPONSE NETWORK</p>
+              <h3 id="contactDirectoryTitle">Contact Directory</h3>
+              <p>Emergency lines for police, fire, medical, disaster response, and utilities.</p>
+            </div>
+            <label class="contact-search" for="contactSearch">Search contacts
+              <input id="contactSearch" type="search" placeholder="Agency, service, or number" autocomplete="off" />
+            </label>
+          </div>
+          <div class="contact-directory-meta">
+            <strong id="contactCount">5 contacts</strong>
+            <span>Local response agencies</span>
+          </div>
+          <div id="contactsList" class="grid-card-list contact-directory-grid"></div>
+          <p id="contactEmptyState" class="contact-empty-state hidden">No contacts match your search.</p>
+        </section>
+
+        <section class="section-panel" id="evacuationCenters" data-role="user admin">
+          <div class="card">
+            <h3>Evacuation Centers</h3>
+            <div id="evacuationList" class="grid-card-list"></div>
+          </div>
+        </section>
+
+        <section class="section-panel" id="safetyTips" data-role="user admin">
+          <div id="safetyTipsList" class="safety-tips-page"></div>
+        </section>
+
+        <section class="section-panel" id="notifications" data-role="user admin pnp">
+          <div id="standardNotificationPanel">
+            <div id="notificationFeed" class="info-list"></div>
+          </div>
+          <div id="pnpNotificationCenter"></div>
+        </section>
+
+        <section class="section-panel" id="patrolDispatch" data-role="pnp">
+          <div id="pnpOpsList"></div>
+        </section>
+
+        <section class="section-panel" id="policeTeamA" data-role="pnp">
+          <div id="pnpTeamReadinessList"></div>
+        </section>
+
+        <section class="section-panel" id="medicalTriage" data-role="hospital">
+          <div class="card">
+            <h3>Medical Triage</h3>
+            <div id="hospitalOpsList" class="info-list"></div>
+          </div>
+        </section>
+
+        <section class="section-panel" id="ambulanceReadiness" data-role="hospital">
+          <div id="hospitalAmbulanceReadiness"></div>
+        </section>
+
+        <section class="section-panel" id="fireOperations" data-role="bfp">
+          <div id="bfpOpsList"></div>
+        </section>
+
+        <section class="section-panel" id="fireReadiness" data-role="bfp">
+          <div id="bfpReadinessList"></div>
+        </section>
+
+        <section class="section-panel" id="disasterOps" data-role="mdrrmc">
+          <div id="mdrrmcOpsList"></div>
+        </section>
+
+        <section class="section-panel" id="disasterResponse" data-role="mdrrmc">
+          <div id="mdrrmcReadinessList"></div>
+        </section>
+
+        <section class="section-panel" id="utilityGrid" data-role="zaneco">
+          <div id="zanecoOpsList"></div>
+        </section>
+
+        <section class="section-panel" id="utilityCrewReadiness" data-role="zaneco">
+          <div id="zanecoCrewReadinessList"></div>
+        </section>
+
+        <section class="section-panel" id="profile" data-role="user">
+          <div class="profile-shell">
+            <header class="profile-page-header">
+              <div class="profile-page-avatar" id="profilePageAvatar">U</div>
+              <div><span>MY ACCOUNT / CITIZEN PROFILE</span><h2 id="profilePageName">Your profile</h2><p id="profilePageRole">Community member</p></div>
+            </header>
+            <form id="profileForm" class="profile-form">
+              <fieldset class="profile-form-section">
+                <legend>Personal information</legend>
+                <div class="profile-form-grid">
+                  <label>Full name<input id="profileInputName" type="text" autocomplete="name" required /></label>
+                  <label>Email address<input id="profileEmail" type="email" autocomplete="email" required /></label>
+                  <label>Phone number<input id="profilePhone" type="tel" autocomplete="tel" required /></label>
+                  <label>Emergency contact<input id="profileEmergencyContact" type="text" placeholder="Name and phone number" required /></label>
+                </div>
+              </fieldset>
+              <fieldset class="profile-form-section">
+                <legend>Password</legend>
+                <p class="profile-password-hint">Leave both password fields blank to keep your current password.</p>
+                <div class="profile-form-grid profile-password-grid">
+                  <label>New password<span class="profile-password-control"><input id="profilePassword" type="password" autocomplete="new-password" /><button type="button" data-profile-password="profilePassword" aria-label="Show new password">Show</button></span></label>
+                  <label>Confirm new password<span class="profile-password-control"><input id="profilePasswordConfirm" type="password" autocomplete="new-password" /><button type="button" data-profile-password="profilePasswordConfirm" aria-label="Show password confirmation">Show</button></span></label>
+                </div>
+              </fieldset>
+              <footer class="profile-form-footer">
+                <p id="profileSaveStatus" aria-live="polite"></p>
+                <div class="profile-form-actions"><button type="button" class="secondary-btn" id="profileDiscardBtn" disabled>Discard changes</button><button type="submit" class="primary-btn" id="profileSaveBtn" disabled>Save changes</button></div>
+              </footer>
+            </form>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="incidentManagement" data-role="admin">
+          <div class="card">
+            <div id="incidentTable" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="adminAlerts" data-role="admin">
+          <div class="card">
+            <h3>Manage Emergency Alerts</h3>
+            <form id="alertForm" class="form-grid">
+              <label>Alert Type
+                <input id="alertType" type="text" placeholder="Weather, Road Closure, Evacuation" required />
+              </label>
+              <label>Message
+                <textarea id="alertMessage" rows="3" required></textarea>
+              </label>
+              <label>Priority
+                <select id="alertSeverity" required>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Create Alert</button>
+              </div>
+            </form>
+            <div id="adminAlertsList" class="alert-list"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="responderManagement" data-role="admin">
+          <div class="card">
+            <h3>Responder Management</h3>
+            <div id="responderList" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="userManagement" data-role="admin">
+          <div class="card">
+            <h3>User Management</h3>
+            <div id="userManagementList" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="evacuationManagement" data-role="admin">
+          <div class="card">
+            <div id="evacManagementList" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="reportsAnalytics" data-role="admin pnp hospital bfp mdrrmc zaneco">
+          <header class="reports-analytics-header">
+            <div>
+              <span>ADMINISTRATOR / REPORTING</span>
+              <h2>Reports &amp; Analytics</h2>
+              <p>Incident volume, response status, and exportable records.</p>
+            </div>
+            <span id="analyticsGeneratedAt"></span>
+          </header>
+          <div class="section-grid">
+            <article class="card stat-card">
+              <h3>Total incidents</h3>
+              <p id="analyticsIncidents">0</p>
+              <small>All submitted reports</small>
+            </article>
+            <article class="card stat-card">
+              <h3>Open incidents</h3>
+              <p id="analyticsResponse">0</p>
+              <small>Pending or responding</small>
+            </article>
+            <article class="card stat-card">
+              <h3>Resolved incidents</h3>
+              <p id="analyticsMonthly">0</p>
+              <small>Closed reports</small>
+            </article>
+            <article class="card stat-card">
+              <h3>High priority</h3>
+              <p id="analyticsHighPriority">0</p>
+              <small>Urgent or high reports</small>
+            </article>
+          </div>
+          <div class="analytics-breakdown-grid">
+            <section class="analytics-breakdown">
+              <header><div><span>INCIDENT MIX</span><h3>Reports by type</h3></div></header>
+              <div id="analyticsTypeBreakdown" class="analytics-bars"></div>
+            </section>
+            <section class="analytics-breakdown">
+              <header><div><span>CASE PROGRESS</span><h3>Status breakdown</h3></div></header>
+              <div id="analyticsStatusBreakdown" class="analytics-bars"></div>
+            </section>
+          </div>
+          <section class="admin-report-export">
+            <div>
+              <span>REPORT OUTPUT</span>
+              <h3>Export or print</h3>
+              <p>Download a paginated incident PDF, a CSV spreadsheet, or print this analytics summary.</p>
+            </div>
+            <div class="report-export-actions">
+              <button id="downloadPdfBtn" class="secondary-btn">Download PDF</button>
+              <button id="downloadExcelBtn" class="secondary-btn">Download CSV</button>
+              <button id="printReportsBtn" class="primary-btn">Print summary</button>
+            </div>
+            <p id="reportExportStatus" aria-live="polite"></p>
+          </section>
+        </section>
+
+        <section class="section-panel admin-view" id="contactManagement" data-role="admin">
+          <div class="card">
+            <div id="contactManagementList" class="table-responsive"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="contentManagement" data-role="admin">
+          <div class="card">
+            <h3>Content Management</h3>
+            <form id="contentForm" class="form-grid">
+              <label>Title
+                <input id="contentTitle" type="text" placeholder="Content title" required />
+              </label>
+              <label>Text
+                <textarea id="contentText" rows="4" placeholder="Content body or announcement" required></textarea>
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="primary-btn">Add Content</button>
+              </div>
+            </form>
+            <div id="contentManagementList" class="info-list"></div>
+          </div>
+        </section>
+
+        <section class="section-panel admin-view" id="systemSettings" data-role="admin">
+          <header class="system-settings-header">
+            <div>
+              <span>ADMINISTRATOR / CONFIGURATION</span>
+              <h2>System settings</h2>
+              <p>Review local system data, protect backups, and manage application branding.</p>
+            </div>
+            <span class="system-settings-local"><i aria-hidden="true"></i> Local browser data</span>
+          </header>
+          <div class="admin-system-status" aria-label="System status">
+            <article><span>Browser storage</span><strong id="settingsStorageStatus">Checking</strong></article>
+            <article><span>Account roles</span><strong id="settingsRoleCount">0 configured</strong></article>
+            <article><span>Emergency contacts</span><strong id="settingsContactCount">0 records</strong></article>
+            <article><span>Incident reports</span><strong id="settingsReportCount">0 records</strong></article>
+            <article><span>Audit entries</span><strong id="settingsAuditCount">0</strong></article>
+          </div>
+          <section class="admin-settings-section">
+            <header class="admin-settings-section-header">
+              <div><span>DATA PROTECTION</span><h3>Backup and restore</h3><p>Export a copy of this browser’s system data or restore a trusted backup.</p></div>
+              <span id="settingsLastSaved" class="settings-last-saved">Last saved: checking</span>
+            </header>
+            <div class="admin-backup-tools">
+              <div class="admin-backup-copy">
+                <h4>System backup</h4>
+                <p>Includes accounts, incident reports, emergency contacts, and configuration.</p>
+                <p class="admin-backup-warning"><strong>Sensitive:</strong> exported account passwords are readable in the backup file. Store it offline and restrict access.</p>
+              </div>
+              <input type="file" id="backupImportInput" accept="application/json,.json" class="hidden" />
+              <div class="admin-backup-actions">
+                <button type="button" class="secondary-btn" id="exportBackupBtn">Export backup</button>
+                <button type="button" class="secondary-btn" id="importBackupBtn">Restore backup</button>
+              </div>
+              <p id="backupStatus" class="admin-backup-status" aria-live="polite"></p>
+            </div>
+          </section>
+          <section class="admin-settings-section admin-branding-section">
+            <header class="admin-settings-section-header">
+              <div><span>APP APPEARANCE</span><h3>Branding</h3><p>Manage the artwork shown on the sign-in screen and application shell.</p></div>
+            </header>
+            <div class="settings-branding-grid">
+              <article class="admin-branding-tool">
+                <div><h4>Login background</h4><p>Shown behind the login and registration panel.</p></div>
+                <input type="file" id="loginBgInput" accept="image/*" class="hidden" />
+                <div class="form-actions"><button type="button" class="secondary-btn" id="uploadLoginBgBtn">Upload background</button><button type="button" class="secondary-btn" id="resetLoginBgBtn">Reset</button></div>
+              </article>
+              <article class="admin-branding-tool">
+                <div><h4>Application logo</h4><p>Shown in the application navigation and sign-in screen.</p></div>
+                <input type="file" id="logoInput" accept="image/*" class="hidden" />
+                <div class="form-actions"><button type="button" class="secondary-btn" id="uploadLogoBtn">Upload logo</button><button type="button" class="secondary-btn" id="resetLogoBtn">Reset</button></div>
+              </article>
+            </div>
+            <p id="settingsActionStatus" class="settings-action-status" aria-live="polite"></p>
+          </section>
+        </section>
+
+        <section class="section-panel admin-view" id="auditLogs" data-role="admin">
+          <div class="card">
+            <h3>Audit Logs</h3>
+            <div id="auditLogList" class="info-list"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Incident Detail Modal -->
+  <div id="incidentModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalIncidentTitle">Incident Details</h2>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-row">
+          <label>Report ID:</label>
+          <span id="modalReportId">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Submitted By:</label>
+          <span id="modalSubmittedBy">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Email:</label>
+          <span id="modalSubmitterEmail">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Incident Type:</label>
+          <span id="modalIncidentType">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Priority:</label>
+          <span id="modalIncidentPriority">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Title:</label>
+          <span id="modalIncidentTitle2">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Location:</label>
+          <span id="modalIncidentLocation">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Description:</label>
+          <span id="modalIncidentDescription">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Contact Number:</label>
+          <span id="modalIncidentContact">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Attachments:</label>
+          <span id="modalIncidentAttachments">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Submitted:</label>
+          <span id="modalIncidentTime">-</span>
+        </div>
+        <div class="detail-row">
+          <label>Current Status:</label>
+          <select id="modalStatusSelect">
+            <option value="Pending">Pending</option>
+            <option value="Responding">Responding</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="detail-row">
+          <label>Response Notes:</label>
+          <textarea id="modalResponseNotes" rows="3" placeholder="Add notes about the response..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary-btn" id="closeModalBtn2">Close</button>
+        <button class="primary-btn" id="updateIncidentBtn">Update Incident</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
